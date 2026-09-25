@@ -16,6 +16,29 @@ class TransactionItem {
     required this.balanceAfter,
   });
 
+  factory TransactionItem.fromJson(Map<String, dynamic> json) {
+    final postingDateStr = json['posting_date'] as String? ?? '';
+    DateTime parsedDate = DateTime.now();
+    try {
+      parsedDate = DateTime.parse(postingDateStr);
+    } catch (_) {}
+
+    final debit = (json['debit_amount'] as num?)?.toDouble() ?? 0.0;
+    final credit = (json['credit_amount'] as num?)?.toDouble() ?? 0.0;
+    final isCredit = credit > 0;
+    final amount = isCredit ? credit : debit;
+    final balance = (json['balance'] as num?)?.toDouble() ?? 0.0;
+
+    return TransactionItem(
+      date: parsedDate,
+      description: json['description'] as String? ?? '',
+      referenceNumber: 'SEQ${json['seq_no'] ?? json['id'] ?? 0}',
+      amount: amount,
+      isCredit: isCredit,
+      balanceAfter: balance,
+    );
+  }
+
   /// Daftar 5 transaksi persis 1:1 sesuai referensi visual 11mutasi_rekening_hasil__page.jpeg
   static List<TransactionItem> get defaultReferenceTransactions => [
     TransactionItem(
@@ -66,7 +89,6 @@ class TransactionItem {
     DateTime endDate,
     double initialBalance,
   ) {
-    // Jika range mencakup Agustus 2026, kembalikan transaksi referensi asli
     if (startDate.month == 8 && startDate.year == 2026) {
       return defaultReferenceTransactions;
     }

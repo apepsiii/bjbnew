@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_assets.dart';
 import 'login_screen.dart';
 
-/// Layar Splash 1:1 sesuai desain referensi resmi Bank BJB
+/// Layar Splash 1:1 dengan logo icon_digi_smb.png & nama 'DIGI bank bjb'
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -64,19 +64,37 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0780C0),
+      backgroundColor: const Color(0xFF0083C9),
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Image.asset(
-              AppAssets.splashScreenNew,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
+        child: Center(
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    AppAssets.logoDigiSmb,
+                    width: 140,
+                    height: 140,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'DIGI bank bjb',
+                    style: TextStyle(
+                      fontFamily: AppAssets.fontFamily,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

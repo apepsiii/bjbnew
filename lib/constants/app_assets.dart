@@ -81,6 +81,7 @@ class AppAssets {
   static const String iconCardDigicash = 'assets/icons/icon_digi.png';
 
   // Icons
+  static const String iconQr = 'assets/icons/icon_qr.png';
   static const String iconTransfer = 'assets/icons/icon_transfer.png';
   static const String iconDigiCash = 'assets/icons/icon_digicash.png';
   static const String iconLayanan = 'assets/icons/icon_layanan.png';

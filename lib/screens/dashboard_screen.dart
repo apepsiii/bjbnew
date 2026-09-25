@@ -8,7 +8,7 @@ import 'beli_screen.dart';
 import 'manajemen_keuangan_screen.dart';
 import 'login_screen.dart';
 
-/// Layar Menu Utama (Dashboard) 1:1 sesuai desain context/design_reference/new/main_menu_fix.png
+/// Layar Menu Utama (Dashboard) 1:1 sesuai desain context/design_reference/new/4main_menu_top_page.jpeg & scrolled.jpeg
 class DashboardScreen extends StatefulWidget {
   final UserModel user;
 
@@ -21,7 +21,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _isBalanceVisible = false;
   bool _isDigiCashVisible = false;
-  int _selectedTabIndex = 0;
+  int _selectedNavIndex = 0;
 
   void _openManajemenKeuangan() {
     Navigator.of(context).push(
@@ -122,24 +122,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final formattedBalance = formatter.format(widget.user.balance);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: Stack(
         children: [
           // Konten Scrollable
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.only(bottom: 84 + bottomPadding),
+            padding: EdgeInsets.only(bottom: 90 + bottomPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top Header Biru BJB dengan header_dashboard.png (1:1 main_menu_fix.png)
+                // Top Header Biru BJB (1:1 Sesuai 4main_menu_top_page.jpeg)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(
                     top: topPadding + 6,
-                    left: 16,
-                    right: 16,
-                    bottom: 20,
+                    left: 18,
+                    right: 18,
+                    bottom: 24,
                   ),
                   decoration: const BoxDecoration(
                     image: DecorationImage(
@@ -148,23 +148,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       alignment: Alignment.topCenter,
                     ),
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
+                      bottomLeft: Radius.circular(28),
+                      bottomRight: Radius.circular(28),
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Baris 1: Status Dot Hijau (kiri) & Search / Mic (kanan)
-                      // Logo DIGI bank bjb ada di tengah pada header_dashboard.png
+                      // Baris 1: Status Dot Hijau & Search / Mic Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Status Hijau Online dengan outer halo
+                          // Status Hijau Online
                           Container(
-                            width: 15,
-                            height: 15,
+                            width: 14,
+                            height: 14,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: const Color(0xFF4CD964).withValues(alpha: 0.35),
@@ -181,7 +180,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
 
-                          // Tombol Bulat Search & Mic (Kanan)
+                          // Tombol Bulat Search & Mic (Kanan Top)
                           Row(
                             children: [
                               GestureDetector(
@@ -236,14 +235,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 52),
+                      const SizedBox(height: 36),
 
-                      // Sapaan Nasabah (1:1 sesuai main_menu_fix.png)
-                      const Text(
-                        'MUHAMAD SAEPURAH...',
-                        style: TextStyle(
+                      // Sapaan Nama Nasabah
+                      Text(
+                        '${widget.user.fullName}...',
+                        style: const TextStyle(
                           fontFamily: AppAssets.fontFamily,
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
                           letterSpacing: 0.3,
@@ -251,106 +250,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 4),
 
-                      // Baris Poin & Info Program
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Left: 1,455 Point + Pill Tukar
-                          Row(
-                            children: [
-                              const Text(
-                                '1,455 Point',
-                                style: TextStyle(
-                                  fontFamily: AppAssets.fontFamily,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () => _showToast('Tukar Point BJB'),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 3.5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.22),
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.4),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.sync_rounded,
-                                        size: 13,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Tukar',
-                                        style: TextStyle(
-                                          fontFamily: AppAssets.fontFamily,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Right: 0 Poin Undian & Info Program
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              const Text(
-                                '0 Poin Undian',
-                                style: TextStyle(
-                                  fontFamily: AppAssets.fontFamily,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              GestureDetector(
-                                onTap: () => _showToast('Info Program Undian BJB'),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      size: 12,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 3),
-                                    Text(
-                                      'Info Program',
-                                      style: TextStyle(
-                                        fontFamily: AppAssets.fontFamily,
-                                        fontSize: 11,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      // Loyalty Point Teks Murni
+                      const Text(
+                        'Loyalty Point',
+                        style: TextStyle(
+                          fontFamily: AppAssets.fontFamily,
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
                       ),
 
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
 
                       // Card 1: Rekening Tabungan Utama (0157902441103)
                       _buildAccountCard(
@@ -370,7 +281,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                       const SizedBox(height: 10),
 
-                      // Card 2: DigiCash (085759247656)
+                      // Card 2: DigiCash (Seragam dengan Card 1 di atasnya)
                       _buildAccountCard(
                         iconAsset: AppAssets.iconCardDigicash,
                         accountTitle: '085759247656',
@@ -389,144 +300,185 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
 
-                // White Card Menu 12 Grid (1:1 sesuai main_menu_fix.png)
+                // White Container Menu Grid Renggang & Longgar (1:1 Sesuai Gambar)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(8, 22, 8, 30),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 28),
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
                   ),
-                  child: Stack(
-                    clipBehavior: Clip.none,
+                  child: Column(
                     children: [
-                      Column(
+                      // Grid 15 Menu Items dengan Jarak Renggang Longgar
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 4,
+                        mainAxisSpacing: 26,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 0.82,
                         children: [
-                          // Baris 1: Manajemen Keuangan, Transfer, Bayar, Beli
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuManajemenKeuangan,
-                                label: 'Manajemen\nKeuangan',
-                                onTap: _openManajemenKeuangan,
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuTransfer,
-                                label: 'Transfer',
-                                onTap: _openManajemenKeuangan,
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuBayar,
-                                label: 'Bayar',
-                                onTap: _openBayarScreen,
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuBeli,
-                                label: 'Beli',
-                                onTap: _openBeliScreen,
-                              ),
-                            ],
+                          // Row 1
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuManajemenKeuangan,
+                            label: 'Manajemen\nKeuangan',
+                            onTap: _openManajemenKeuangan,
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuTransfer,
+                            label: 'Transfer',
+                            onTap: _openManajemenKeuangan,
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuBayar,
+                            label: 'Bayar',
+                            onTap: _openBayarScreen,
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuBeli,
+                            label: 'Beli',
+                            onTap: _openBeliScreen,
                           ),
 
-                          const SizedBox(height: 18),
-
-                          // Baris 2: Cardless, Buka Rekening, bjb Deposito, bjb Tandamata
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuCardless,
-                                label: 'Cardless',
-                                onTap: () => _showToast('Layanan Cardless BJB'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuBukaRekening,
-                                label: 'Buka\nRekening',
-                                onTap: () => _showToast('Layanan Buka Rekening BJB'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuDeposito,
-                                label: 'bjb\nDeposito',
-                                onTap: () => _showToast('Layanan bjb Deposito'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuTandamata,
-                                label: 'bjb\nTandamata',
-                                onTap: () => _showToast('Layanan bjb Tandamata'),
-                              ),
-                            ],
+                          // Row 2
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuCardless,
+                            label: 'Cardless',
+                            onTap: () => _showToast('Layanan Cardless BJB'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuBukaRekening,
+                            label: 'Buka\nRekening',
+                            onTap: () => _showToast('Buka Rekening BJB'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuPinjamanAsn,
+                            label: 'Pinjaman\nASN',
+                            onTap: () => _showToast('Pinjaman ASN (KGB Pisan)'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuTandamata,
+                            label: 'bjb\nTandamata\nRencana',
+                            onTap: () => _showToast('bjb Tandamata Rencana'),
                           ),
 
-                          const SizedBox(height: 18),
+                          // Row 3
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuDonasi,
+                            label: 'Donasi',
+                            onTap: () => _showToast('Layanan Donasi BJB'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconTsamsat,
+                            label: 'T-Samsat',
+                            onTap: () => _showToast('Layanan T-Samsat BJB'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuDeposito,
+                            label: 'bjb\nDeposito',
+                            onTap: () => _showToast('Layanan bjb Deposito'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconMenuLainnya,
+                            label: 'Menu\nLainnya',
+                            onTap: () => _showToast('Menu Lainnya BJB'),
+                          ),
 
-                          // Baris 3: Flip, Donasi, Collect Dana, Pinjaman ASN
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuFlip,
-                                label: 'Flip',
-                                onTap: () => _showToast('Layanan Flip BJB'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuDonasi,
-                                label: 'Donasi',
-                                onTap: () => _showToast('Layanan Donasi BJB'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuCollectDana,
-                                label: 'Collect\nDana',
-                                onTap: () => _showToast('Layanan Collect Dana BJB'),
-                              ),
-                              _buildMenuItem(
-                                asset: AppAssets.iconMenuPinjamanAsn,
-                                label: 'Pinjaman\nASN',
-                                onTap: () => _showToast('Layanan Pinjaman ASN (KGB Pisan)'),
-                              ),
-                            ],
+                          // Row 4 (Tampil saat di-scroll ke bawah 1:1 sesuai gambar scrolled.jpeg)
+                          _buildGridItem(
+                            asset: AppAssets.iconDigiloan,
+                            label: 'Digiloan',
+                            onTap: () => _showToast('Layanan Digiloan BJB'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconWebLelang,
+                            label: 'bjb Lelang',
+                            onTap: () => _showToast('Layanan bjb Lelang'),
+                          ),
+                          _buildGridItem(
+                            asset: AppAssets.iconDplk,
+                            label: 'DPLK',
+                            onTap: () => _showToast('Layanan DPLK BJB'),
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 28),
+                      const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                      const SizedBox(height: 20),
+
+                      // Seksi Favorit saat di-scroll ke bawah
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            'Favorit',
+                            style: TextStyle(
+                              fontFamily: AppAssets.fontFamily,
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Placeholder Lingkaran Favorit Putus-putus
+                      Row(
+                        children: [
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF94A3B8),
+                                width: 1.2,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Color(0xFF94A3B8),
+                              size: 22,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 24),
               ],
             ),
           ),
 
-          // Floating Logo Tammy di Kanan Bawah (persis di atas navbar)
+          // Floating Logo Tammy "Panggil Tami" di Kanan Bawah
           Positioned(
             right: 14,
-            bottom: 64 + bottomPadding,
+            bottom: 74 + bottomPadding,
             child: GestureDetector(
               onTap: () {
                 _showToast('Halo! Saya Tami, asisten virtual bank bjb.');
               },
               child: Image.asset(
-                AppAssets.logoTammyFloating,
-                width: 68,
-                height: 68,
+                AppAssets.panggilTami,
+                width: 64,
+                height: 64,
                 fit: BoxFit.contain,
               ),
             ),
           ),
 
-          // Floating Bottom Navigation Bar (1:1 sesuai main_menu_fix.png)
+          // Bottom Navigation Bar Presisi
           Positioned(
             left: 0,
             right: 0,
@@ -547,7 +499,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required VoidCallback onTapChevron,
   }) {
     return Container(
-      height: 54,
+      height: 52,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -563,7 +515,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         children: [
           const SizedBox(width: 10),
-          // Icon Kartu (power / digi)
           Image.asset(
             iconAsset,
             width: 32,
@@ -572,7 +523,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           const SizedBox(width: 10),
 
-          // Nomor & Saldo IDR
           Expanded(
             child: GestureDetector(
               onTap: onTapChevron,
@@ -604,7 +554,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
 
-          // Eye toggle
           IconButton(
             icon: Icon(
               isBalanceVisible
@@ -616,7 +565,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: onToggleVisibility,
           ),
 
-          // Yellow chevron button di sisi paling kanan
           GestureDetector(
             onTap: onTapChevron,
             child: Container(
@@ -637,52 +585,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _buildGridItem({
     required String asset,
     required String label,
     required VoidCallback onTap,
   }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFD),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: const Color(0xFFE2EDF8),
-                  width: 1,
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF4F8FC),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFE2EDF8),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0075B5).withValues(alpha: 0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0075B5).withValues(alpha: 0.06),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(9),
-              child: Image.asset(asset, fit: BoxFit.contain),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: const TextStyle(
-                fontFamily: AppAssets.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1E3A5F),
-                height: 1.15,
-              ),
+            padding: const EdgeInsets.all(9),
+            child: Image.asset(asset, fit: BoxFit.contain),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 3,
+            style: const TextStyle(
+              fontFamily: AppAssets.fontFamily,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E3A5F),
+              height: 1.15,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -692,111 +639,148 @@ class _DashboardScreenState extends State<DashboardScreen> {
       color: Colors.white,
       padding: EdgeInsets.only(bottom: bottomPadding),
       child: SizedBox(
-        height: 72,
+        height: 70,
         child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            height: 56,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(
-                  color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
-                  width: 1,
+          alignment: Alignment.bottomCenter,
+          clipBehavior: Clip.none,
+          children: [
+            // Bar Navigasi Putih
+            Container(
+              height: 58,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+                    width: 1,
+                  ),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(0, Icons.inbox_outlined, 'Inbox'),
-                _buildNavItem(1, Icons.favorite_border_rounded, 'Favorit'),
-                const SizedBox(width: 48), // Ruang untuk center QRIS
-                _buildNavItem(2, Icons.settings_outlined, 'Setting'),
-                _buildNavItem(3, Icons.logout_rounded, 'Keluar', isLogout: true),
-              ],
-            ),
-          ),
-
-          // Tombol Lingkaran Pink/Red QRIS di Tengah
-          Positioned(
-            top: 0,
-            child: GestureDetector(
-              onTap: () => _showToast('QRIS Scanner Bank BJB'),
-              child: Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8B6B9),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF8B2B38).withValues(alpha: 0.22),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+              child: Row(
+                children: [
+                  // Item 1: Inbox
+                  Expanded(
+                    child: _buildNavItem(
+                      icon: Icons.chat_bubble_outline_rounded,
+                      label: 'Inbox',
+                      isSelected: _selectedNavIndex == 0,
+                      onTap: () {
+                        setState(() => _selectedNavIndex = 0);
+                        _showToast('Layanan Inbox BJB');
+                      },
                     ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.qr_code_scanner_rounded,
-                    color: Color(0xFF571E21),
-                    size: 26,
+                  ),
+                  // Item 2: Favorit
+                  Expanded(
+                    child: _buildNavItem(
+                      icon: Icons.favorite_border_rounded,
+                      label: 'Favorit',
+                      isSelected: _selectedNavIndex == 1,
+                      onTap: () {
+                        setState(() => _selectedNavIndex = 1);
+                        _showToast('Layanan Favorit BJB');
+                      },
+                    ),
+                  ),
+
+                  // Space untuk Floating QR Button di tengah
+                  const SizedBox(width: 68),
+
+                  // Item 3: Setting
+                  Expanded(
+                    child: _buildNavItem(
+                      icon: Icons.settings_outlined,
+                      label: 'Setting',
+                      isSelected: _selectedNavIndex == 2,
+                      onTap: () {
+                        setState(() => _selectedNavIndex = 2);
+                        _showToast('Pengaturan BJB DIGI');
+                      },
+                    ),
+                  ),
+                  // Item 4: Keluar
+                  Expanded(
+                    child: _buildNavItem(
+                      icon: Icons.logout_rounded,
+                      label: 'Keluar',
+                      isSelected: _selectedNavIndex == 3,
+                      onTap: _showLogoutDialog,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Floating QR Button di Tengah
+            Positioned(
+              top: -12,
+              child: GestureDetector(
+                onTap: () => _showToast('Buka Pembayaran QRIS BJB'),
+                child: Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset(
+                    AppAssets.iconQr,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label,
-      {bool isLogout = false}) {
-    final isSelected = _selectedTabIndex == index;
-    return InkWell(
-      onTap: () {
-        if (isLogout) {
-          _showLogoutDialog();
-        } else {
-          setState(() => _selectedTabIndex = index);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 21,
-              color: isSelected ? const Color(0xFF0075C9) : const Color(0xFF64748B),
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final color = isSelected ? const Color(0xFF0083C9) : const Color(0xFF64748B);
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: AppAssets.fontFamily,
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: color,
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: AppAssets.fontFamily,
-                fontSize: 10.5,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? const Color(0xFF0075C9) : const Color(0xFF64748B),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

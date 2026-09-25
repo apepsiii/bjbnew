@@ -13,15 +13,29 @@ class UserModel {
   const UserModel({
     required this.fullName,
     required this.accountNumber,
-    this.accountType = 'Tandamata Sertifikasi Guru',
+    this.accountType = 'Tabungan Simpeda',
     required this.balance,
     required this.phoneNumber,
-    this.cif = '0157902441',
-    this.email = 'saepurahman.bjb@gmail.com',
-    this.branchName = 'KC BOGOR',
+    this.cif = '0070482584100',
+    this.email = 'aldi.firnando@gmail.com',
+    this.branchName = 'KC CIBINONG',
     this.branchAddress =
-        'Jl. Kapten Muslihat No. 11-13, Kota Bogor, Jawa Barat',
+        'Kp. Siliwangi RT 001 RW 003 Cigombong, Kab. Bogor, Jawa Barat',
   });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      fullName: json['full_name'] as String? ?? 'ALDI FIRNANDO',
+      accountNumber: json['account_number'] as String? ?? '0070482584100',
+      accountType: json['product_name'] as String? ?? 'Tabungan Simpeda',
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      phoneNumber: '081298765432',
+      cif: json['account_number'] as String? ?? '0070482584100',
+      email: '${json['username'] ?? "user"}@bjb.co.id',
+      branchName: json['branch'] as String? ?? 'KC CIBINONG',
+      branchAddress: json['address'] as String? ?? 'Kp. Siliwangi RT 001 RW 003 Cigombong, Kab. Bogor, Jawa Barat',
+    );
+  }
 
   UserModel copyWith({
     String? fullName,
@@ -47,16 +61,16 @@ class UserModel {
     );
   }
 
-  /// Default profil nasabah demo sesuai referensi visual 1:1
+  /// Default profil nasabah demo
   static const UserModel defaultUser = UserModel(
-    fullName: 'MUHAMAD SAEPURAHMAN',
-    accountNumber: '0157902441103',
-    accountType: 'Tandamata Sertifikasi Guru',
-    balance: 107120.0,
+    fullName: 'ALDI FIRNANDO',
+    accountNumber: '0070482584100',
+    accountType: 'Tabungan Simpeda',
+    balance: 36821139.0,
     phoneNumber: '081298765432',
-    cif: '0157902441',
-    email: 'saepurahman.bjb@gmail.com',
-    branchName: 'KC BOGOR',
-    branchAddress: 'Jl. Kapten Muslihat No. 11-13, Kota Bogor, Jawa Barat',
+    cif: '0070482584100',
+    email: 'aldi.firnando@gmail.com',
+    branchName: 'KC CIBINONG',
+    branchAddress: 'Kp. Siliwangi RT 001 RW 003 Cigombong, Kab. Bogor, Jawa Barat',
   );
 }

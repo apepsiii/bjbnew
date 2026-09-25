@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_assets.dart';
 import '../models/user_model.dart';
+import '../services/api_service.dart';
 import 'dashboard_screen.dart';
 
 /// Layar Login 1:1 sesuai desain referensi 2login_page.jpeg & 3password_after_klik_login.jpeg
@@ -12,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _queryController = TextEditingController();
+  final TextEditingController _queryController = TextEditingController(text: 'aldi');
 
   @override
   void dispose() {
@@ -21,15 +22,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showPasswordDialog() async {
-    final result = await showDialog<bool>(
+    final usernameInput = _queryController.text.trim().isEmpty ? 'aldi' : _queryController.text.trim();
+
+    final UserModel? loggedInUser = await showDialog<UserModel>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (context) => const _PasswordDialog(),
+      builder: (context) => _PasswordDialog(initialUsername: usernameInput),
     );
-    if (result == true && mounted) {
+
+    if (mounted) {
+      final targetUser = loggedInUser ?? UserModel.defaultUser;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => const DashboardScreen(user: UserModel.defaultUser),
+          builder: (_) => DashboardScreen(user: targetUser),
         ),
       );
     }
@@ -41,21 +46,26 @@ class _LoginScreenState extends State<LoginScreen> {
     final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
+    // Header mengambil ~44% tinggi layar (1:1 Sesuai 2login_page.jpeg)
+    final headerHeight = size.height * 0.44;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: SizedBox(
-          height: size.height - bottomPadding,
+          height: size.height,
           child: Column(
             children: [
-              // Top Header Biru BJB dengan Sapaan MUHAMAD SAEPURAH...
+              // Top Header Biru BJB (~44% Tinggi Layar) 1:1 Sesuai Foto
               Container(
                 width: double.infinity,
+                height: headerHeight,
                 padding: EdgeInsets.only(
-                  top: topPadding + 12,
+                  top: topPadding + 8,
                   left: 20,
                   right: 20,
-                  bottom: 30,
+                  bottom: 24,
                 ),
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -68,16 +78,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Pill Cek saldo anda ︾
+                    // Top Pill: Cek saldo anda ︾
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 22,
+                        horizontal: 24,
                         vertical: 7,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00588A).withValues(alpha: 0.85),
+                        color: const Color(0xFF004B7A).withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
@@ -92,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.white,
                             ),
                           ),
-                          SizedBox(width: 6),
+                          SizedBox(width: 8),
                           Icon(
                             Icons.keyboard_double_arrow_down_rounded,
                             color: Colors.white,
@@ -101,43 +111,42 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 38),
 
-                    // Sapaan Nasabah
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Halo,',
-                        style: TextStyle(
-                          fontFamily: AppAssets.fontFamily,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
+                    // Middle Sapaan User: Halo, MUHAMAD SAEPURAH...
+                    const Column(
+                      children: [
+                        Text(
+                          'Halo,',
+                          style: TextStyle(
+                            fontFamily: AppAssets.fontFamily,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'MUHAMAD SAEPURAH...',
-                        style: TextStyle(
-                          fontFamily: AppAssets.fontFamily,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+                        SizedBox(height: 6),
+                        Text(
+                          'MUHAMAD SAEPURAH...',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: AppAssets.fontFamily,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.4,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Kontainer Pertanyaan & Input bar transaksi
+              // Card Form "Kamu mau melakukan transaksi?" 1:1 Sesuai Foto
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
@@ -147,17 +156,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Kamu mau melakukan transaksi?',
                       style: TextStyle(
                         fontFamily: AppAssets.fontFamily,
-                        fontSize: 14.5,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF2D3748),
                       ),
                     ),
                     const SizedBox(height: 12),
 
-                    // Baris Input + Tombol Go
+                    // Baris Input + Tombol Kuning "Go"
                     Row(
                       children: [
-                        // Field Input rounded light blue
                         Expanded(
                           child: Container(
                             height: 48,
@@ -185,7 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onSubmitted: (_) => _showPasswordDialog(),
                                   ),
                                 ),
-                                // Dropdown & Clear icons
                                 Container(
                                   width: 22,
                                   height: 22,
@@ -222,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(width: 12),
 
-                        // Tombol Kuning BJB "Go"
+                        // Tombol Kuning "Go"
                         GestureDetector(
                           onTap: _showPasswordDialog,
                           child: Container(
@@ -261,25 +268,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const Spacer(),
 
-              // Bagian Bawah: Quick Action + Mascot Tammi + Pill "Login"
+              // Bagian Bawah: Mascot Tammi + Pill "Login" 1:1 Sesuai Foto
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: SizedBox(
-                  height: 300,
+                  height: 250,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
-                      // Quick Action Button di Kiri Bawah
+                      // Quick Action Button
                       Positioned(
                         left: 12,
-                        bottom: 40,
+                        bottom: 30,
                         child: GestureDetector(
                           onTap: _showPasswordDialog,
                           child: Column(
                             children: [
                               Container(
-                                width: 56,
-                                height: 56,
+                                width: 54,
+                                height: 54,
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [
@@ -302,16 +309,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: const Icon(
                                   Icons.grid_view_rounded,
                                   color: Colors.white,
-                                  size: 26,
+                                  size: 24,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 6),
                               const Text(
                                 'Quick\nAction',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: AppAssets.fontFamily,
-                                  fontSize: 13,
+                                  fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xFF00588A),
                                   height: 1.15,
@@ -322,21 +329,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                      // Mascot Tammi di Kanan
+                      // Mascot Tammi
                       Positioned(
                         right: 12,
                         bottom: 0,
                         child: Image.asset(
                           AppAssets.tammi,
-                          height: 280,
+                          height: 230,
                           fit: BoxFit.contain,
                         ),
                       ),
 
-                      // Floating Pill "Login" di depan pinggang Tammi (1:1 sesuai 2login_page.jpeg)
+                      // Floating Pill "Login"
                       Positioned(
                         right: 32,
-                        bottom: 48,
+                        bottom: 36,
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: _showPasswordDialog,
@@ -362,14 +369,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Icon(
                                   Icons.home_rounded,
                                   color: Color(0xFF00588A),
-                                  size: 18,
+                                  size: 17,
                                 ),
                                 SizedBox(width: 6),
                                 Text(
                                   'Login',
                                   style: TextStyle(
                                     fontFamily: AppAssets.fontFamily,
-                                    fontSize: 14.5,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFF00588A),
                                   ),
@@ -384,7 +391,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: bottomPadding + 8),
             ],
           ),
         ),
@@ -393,17 +400,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-/// Modal Dialog Password 1:1 sesuai 3password_after_klik_login.jpeg
+/// Modal Dialog Password (1:1 Sesuai Gambar Referensi Terbaru)
 class _PasswordDialog extends StatefulWidget {
-  const _PasswordDialog();
+  final String initialUsername;
+  const _PasswordDialog({required this.initialUsername});
 
   @override
   State<_PasswordDialog> createState() => _PasswordDialogState();
 }
 
 class _PasswordDialogState extends State<_PasswordDialog> {
-  final TextEditingController _passController = TextEditingController();
+  final TextEditingController _passController = TextEditingController(text: '123456');
   bool _obscureText = true;
+  bool _isAuthenticating = false;
 
   @override
   void dispose() {
@@ -411,8 +420,18 @@ class _PasswordDialogState extends State<_PasswordDialog> {
     super.dispose();
   }
 
-  void _onMasuk() {
-    Navigator.of(context).pop(true);
+  void _onMasuk() async {
+    setState(() => _isAuthenticating = true);
+
+    final username = widget.initialUsername.isEmpty ? 'aldi' : widget.initialUsername;
+    final password = _passController.text.trim().isEmpty ? '123456' : _passController.text.trim();
+
+    final user = await ApiService.login(username, password);
+
+    if (mounted) {
+      setState(() => _isAuthenticating = false);
+      Navigator.of(context).pop(user);
+    }
   }
 
   @override
@@ -437,7 +456,7 @@ class _PasswordDialogState extends State<_PasswordDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header Tutup dengan ikon silang di kanan
+            // Header Tutup dengan ikon silang biru
             Padding(
               padding: const EdgeInsets.only(top: 14, right: 14, bottom: 8),
               child: Align(
@@ -480,7 +499,7 @@ class _PasswordDialogState extends State<_PasswordDialog> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: const Color(0xFFCBD5E1),
+                        color: const Color(0xFF0083C9),
                         width: 1.2,
                       ),
                     ),
@@ -499,7 +518,7 @@ class _PasswordDialogState extends State<_PasswordDialog> {
                           hintText: 'Masukkan Password Anda',
                           hintStyle: const TextStyle(
                             fontFamily: AppAssets.fontFamily,
-                            fontSize: 14,
+                            fontSize: 13.5,
                             color: Color(0xFF94A3B8),
                           ),
                           border: InputBorder.none,
@@ -513,8 +532,6 @@ class _PasswordDialogState extends State<_PasswordDialog> {
                               color: const Color(0xFF0083C9),
                               size: 20,
                             ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
                             onPressed: () {
                               setState(() {
                                 _obscureText = !_obscureText;
@@ -526,51 +543,54 @@ class _PasswordDialogState extends State<_PasswordDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-
-                  // Teks Lupa Password
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Text(
-                      'Lupa Password',
-                      style: TextStyle(
-                        fontFamily: AppAssets.fontFamily,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF0083C9),
-                      ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Lupa Password',
+                    style: TextStyle(
+                      fontFamily: AppAssets.fontFamily,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0083C9),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
 
-            // Tombol Kuning "Masuk"
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: _onMasuk,
-              child: Container(
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFDB913),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(16),
-                    bottomRight: Radius.circular(16),
+            // Tombol Masuk Berwarna Kuning BJB (1:1 Sesuai Foto Referensi)
+            Padding(
+              padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18),
+              child: ElevatedButton(
+                onPressed: _isAuthenticating ? null : _onMasuk,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFDB913), // Warna Kuning BJB
+                  foregroundColor: const Color(0xFF00588A), // Teks Biru Tua
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  elevation: 0,
                 ),
-                child: const Center(
-                  child: Text(
-                    'Masuk',
-                    style: TextStyle(
-                      fontFamily: AppAssets.fontFamily,
-                      fontSize: 15.5,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E293B),
-                    ),
-                  ),
-                ),
+                child: _isAuthenticating
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF00588A),
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Masuk',
+                        style: TextStyle(
+                          fontFamily: AppAssets.fontFamily,
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF00588A),
+                        ),
+                      ),
               ),
             ),
           ],

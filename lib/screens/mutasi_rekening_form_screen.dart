@@ -6,7 +6,7 @@ import '../models/user_model.dart';
 import '../widgets/bjb_date_picker_bottom_sheet.dart';
 import 'mutasi_rekening_hasil_screen.dart';
 
-/// Form Permintaan Mutasi Rekening 1:1 sesuai 9mutasi_rekening_page_dari card_manajemen_keuangan.jpeg
+/// Form Permintaan Mutasi Rekening 1:1 sesuai foto referensi mutasi_rekening_form_page.jpeg
 class MutasiRekeningFormScreen extends StatefulWidget {
   final UserModel user;
 
@@ -18,7 +18,6 @@ class MutasiRekeningFormScreen extends StatefulWidget {
 }
 
 class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
-  // Tanggal default Agustus 2026 untuk menampilkan transaksi referensi asli
   late DateTime _startDate;
   late DateTime _endDate;
   final TextEditingController _emailController = TextEditingController();
@@ -27,9 +26,9 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
   @override
   void initState() {
     super.initState();
-    // Default sesuai rentang di referensi: 1 Agustus 2026 - 30 Agustus 2026
-    _startDate = DateTime(2026, 8, 1);
-    _endDate = DateTime(2026, 8, 30);
+    // Default mencakup seluruh periode data hasil ekstraksi BJB (Juni - Agustus 2026)
+    _startDate = DateTime(2026, 6, 1);
+    _endDate = DateTime(2026, 8, 31);
     _emailController.text = widget.user.email;
   }
 
@@ -56,7 +55,7 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
       setState(() {
         _startDate = picked;
         if (_endDate.isBefore(_startDate)) {
-          _endDate = _startDate.add(const Duration(days: 29));
+          _endDate = _startDate.add(const Duration(days: 30));
         }
       });
     }
@@ -97,7 +96,7 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
     final liveTimeString = DateFormat('dd/MM/yyyy\nHH:mm:ss').format(now);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFD9ECFA),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0083C9),
         elevation: 0,
@@ -137,18 +136,19 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
                         shape: BoxShape.circle,
                       ),
                     ),
+                    const SizedBox(width: 4),
+                    Text(
+                      liveTimeString,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontFamily: AppAssets.fontFamily,
+                        fontSize: 9.5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        height: 1.1,
+                      ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  liveTimeString,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontFamily: AppAssets.fontFamily,
-                    fontSize: 9.5,
-                    color: Colors.white,
-                    height: 1.1,
-                  ),
                 ),
               ],
             ),
@@ -156,31 +156,29 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Label Dari Tanggal
+            // Field 1: Dari Tanggal
             const Text(
               'Dari Tanggal',
               style: TextStyle(
                 fontFamily: AppAssets.fontFamily,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
-
-            // Field Dari Tanggal
             GestureDetector(
               onTap: _pickStartDate,
               child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF5FA),
-                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFFEAF4FC),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,14 +187,14 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
                       _formatDisplayDate(_startDate),
                       style: const TextStyle(
                         fontFamily: AppAssets.fontFamily,
-                        fontSize: 14.5,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF334155),
+                        color: Color(0xFF475569),
                       ),
                     ),
                     const Icon(
                       Icons.calendar_month_outlined,
-                      color: Color(0xFF64748B),
+                      color: Color(0xFF0083C9),
                       size: 20,
                     ),
                   ],
@@ -204,29 +202,26 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
-            // Label Sampai Tanggal
+            // Field 2: Sampai Tanggal
             const Text(
               'Sampai Tanggal',
               style: TextStyle(
                 fontFamily: AppAssets.fontFamily,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
-
-            // Field Sampai Tanggal
             GestureDetector(
               onTap: _pickEndDate,
               child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF5FA),
-                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFFEAF4FC),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,14 +230,14 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
                       _formatDisplayDate(_endDate),
                       style: const TextStyle(
                         fontFamily: AppAssets.fontFamily,
-                        fontSize: 14.5,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF334155),
+                        color: Color(0xFF475569),
                       ),
                     ),
                     const Icon(
                       Icons.calendar_month_outlined,
-                      color: Color(0xFF64748B),
+                      color: Color(0xFF0083C9),
                       size: 20,
                     ),
                   ],
@@ -250,56 +245,52 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
-            // Label Jenis Transaksi
+            // Field 3: Jenis Transaksi
             const Text(
               'Jenis Transaksi',
               style: TextStyle(
                 fontFamily: AppAssets.fontFamily,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
-
-            // Dropdown Jenis Transaksi
             Container(
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF5FA),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFEAF4FC),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _selectedTransactionType,
                   isExpanded: true,
+                  style: const TextStyle(
+                    fontFamily: AppAssets.fontFamily,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF475569),
+                  ),
                   icon: const Icon(
-                    Icons.arrow_drop_down,
-                    color: Color(0xFF64748B),
+                    Icons.arrow_drop_down_rounded,
+                    color: Color(0xFF475569),
+                    size: 24,
                   ),
                   items: const [
                     DropdownMenuItem(
                       value: 'Semua Transaksi',
-                      child: Text(
-                        'Semua Transaksi',
-                        style: TextStyle(
-                          fontFamily: AppAssets.fontFamily,
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF334155),
-                        ),
-                      ),
+                      child: Text('Semua Transaksi'),
                     ),
                     DropdownMenuItem(
-                      value: 'Transaksi Debit',
-                      child: Text('Transaksi Debit'),
+                      value: 'Uang Masuk (Kredit)',
+                      child: Text('Uang Masuk (Kredit)'),
                     ),
                     DropdownMenuItem(
-                      value: 'Transaksi Kredit',
-                      child: Text('Transaksi Kredit'),
+                      value: 'Uang Keluar (Debit)',
+                      child: Text('Uang Keluar (Debit)'),
                     ),
                   ],
                   onChanged: (val) {
@@ -311,100 +302,106 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
-            // Label Email
+            // Field 4: Email Input
             const Text(
               'Email',
               style: TextStyle(
                 fontFamily: AppAssets.fontFamily,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 8),
-
-            // Input Field Email
             Container(
-              height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF5FA),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFEAF4FC),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Center(
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(
+              child: TextField(
+                controller: _emailController,
+                style: const TextStyle(
+                  fontFamily: AppAssets.fontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1E293B),
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'Input email',
+                  hintStyle: TextStyle(
                     fontFamily: AppAssets.fontFamily,
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF1E293B),
+                    fontSize: 14,
+                    color: Color(0xFF94A3B8),
                   ),
-                  decoration: const InputDecoration(
-                    hintText: 'Input email',
-                    hintStyle: TextStyle(
-                      fontFamily: AppAssets.fontFamily,
-                      fontSize: 14.5,
-                      color: Color(0xFF94A3B8),
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                  border: InputBorder.none,
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // 3 Disclaimer Bullet Points (1:1 sesuai 9mutasi_rekening_page_dari...)
+            // Catatan Disclaimer (1:1 Sesuai Foto Referensi)
             const Text(
-              '*) Data transaksi yang dapat ditampilkan adalah 3 Bulan terakhir sejak hari ini\n'
-              '*) Data transaksi berdasarkan range hari maksimal 1 Bulan\n'
+              '*) Data transaksi yang dapat ditampilkan adalah 3 Bulan terakhir sejak hari ini',
+              style: TextStyle(
+                fontFamily: AppAssets.fontFamily,
+                fontSize: 11,
+                color: Color(0xFF94A3B8),
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              '*) Data transaksi berdasarkan range hari maksimal 1 Bulan',
+              style: TextStyle(
+                fontFamily: AppAssets.fontFamily,
+                fontSize: 11,
+                color: Color(0xFF94A3B8),
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
               '*) Untuk membuat file pdf mutasi rekening gunakan tanggal lahir anda dengan format ddmmyyyy (Tanggal Bulan Tahun lahir anda. Contoh: 06081980)',
               style: TextStyle(
                 fontFamily: AppAssets.fontFamily,
-                fontSize: 11.5,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF64748B),
-                height: 1.45,
+                fontSize: 11,
+                color: Color(0xFF94A3B8),
+                height: 1.35,
               ),
             ),
 
-            const SizedBox(height: 36),
+            const SizedBox(height: 28),
 
-            // Tombol Kuning "Tampilkan"
-            GestureDetector(
-              onTap: _onTampilkan,
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFDB913),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFDB913).withValues(alpha: 0.35),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+            // Tombol Kuning BJB "Tampilkan" (1:1 Sesuai Foto Referensi)
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _onTampilkan,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFDB913), // Kuning BJB
+                  foregroundColor: const Color(0xFF00588A), // Teks Biru Tua
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                child: const Center(
-                  child: Text(
-                    'Tampilkan',
-                    style: TextStyle(
-                      fontFamily: AppAssets.fontFamily,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E293B),
-                    ),
+                child: const Text(
+                  'Tampilkan',
+                  style: TextStyle(
+                    fontFamily: AppAssets.fontFamily,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF00588A),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
