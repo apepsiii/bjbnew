@@ -220,4 +220,32 @@ class ApiService {
     }
     return null;
   }
+
+  // POST /api/v1/mutasi/send-email
+  static Future<bool> sendMutasiEmail({
+    required String recipientEmail,
+    required String startDate,
+    required String endDate,
+  }) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/mutasi/send-email'),
+        headers: headers,
+        body: jsonEncode({
+          'recipient_email': recipientEmail,
+          'start_date': startDate,
+          'end_date': endDate,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        return body['success'] == true;
+      }
+    } catch (e) {
+      debugPrint('API sendMutasiEmail error: $e');
+    }
+    return false;
+  }
 }

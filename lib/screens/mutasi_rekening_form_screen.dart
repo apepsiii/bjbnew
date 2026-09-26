@@ -1,11 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../constants/app_assets.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
-import '../services/email_service.dart';
 import '../widgets/bjb_date_picker_bottom_sheet.dart';
 import 'mutasi_rekening_hasil_screen.dart';
 
@@ -126,22 +124,12 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
       final startStr = DateFormat('yyyy-MM-dd').format(_startDate);
       final endStr = DateFormat('yyyy-MM-dd').format(_endDate);
 
-      // Unduh PDF dari server untuk lampiran email jika tersedia
-      File? attachmentPdf;
-      final downloadedPath = await ApiService.downloadStatementPDF(
+      // Memanggil Go Backend Service di server (https://bjb.gxa.my.id/api/v1/mutasi/send-email)
+      // untuk pengiriman email terenkripsi via Cloudflare SMTPS + lampiran PDF
+      await ApiService.sendMutasiEmail(
+        recipientEmail: targetEmail,
         startDate: startStr,
         endDate: endStr,
-      );
-      if (downloadedPath != null && File(downloadedPath).existsSync()) {
-        attachmentPdf = File(downloadedPath);
-      }
-
-      await EmailService.sendMutasiEmailHtml(
-        recipientEmail: targetEmail,
-        user: widget.user,
-        startDate: _startDate,
-        endDate: _endDate,
-        pdfFile: attachmentPdf,
       );
     } catch (e) {
       debugPrint('Background email error: $e');
