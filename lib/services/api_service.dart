@@ -41,6 +41,9 @@ class ApiService {
     return 'http://localhost:8080/api/v1';
   }
 
+  static const String _savedUsernameKey = 'bjb_saved_username';
+  static const String _savedFullNameKey = 'bjb_saved_fullname';
+
   // Token management
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -55,6 +58,23 @@ class ApiService {
   static Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+  }
+
+  // Session user persistence (Ingat User ALDI FIRNANDO setelah login pertama)
+  static Future<void> saveRememberedUser(String username, String fullName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_savedUsernameKey, username);
+    await prefs.setString(_savedFullNameKey, fullName);
+  }
+
+  static Future<Map<String, String>?> getRememberedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString(_savedUsernameKey);
+    final fullName = prefs.getString(_savedFullNameKey);
+    if (username != null && username.isNotEmpty) {
+      return {'username': username, 'fullName': fullName ?? username};
+    }
+    return null;
   }
 
   // Header helper dengan Bearer JWT
@@ -82,7 +102,9 @@ class ApiService {
           final token = body['data']['token'] as String;
           await saveToken(token);
           final userJson = body['data']['user'] as Map<String, dynamic>;
-          return UserModel.fromJson(userJson);
+          final user = UserModel.fromJson(userJson);
+          await saveRememberedUser(user.username, user.fullName);
+          return user;
         }
       }
     } catch (e) {
@@ -165,15 +187,29 @@ class ApiService {
     return [];
   }
 
-  // GET /api/v1/mutasi/download?id=X -> Downloads PDF file directly to local storage
-  static Future<String?> downloadStatementPDF({int? statementId}) async {
+  // GET /api/v1/mutasi/download?id=X&start_date=Y&end_date=Z -> Downloads PDF file directly to local storage
+  static Future<String?> downloadStatementPDF({
+    int? statementId,
+    String? startDate,
+    String? endDate,
+  }) async {
     try {
       final headers = await _getHeaders();
-      final queryParam = (statementId != null && statementId > 0) ? '?id=$statementId' : '';
-      final uri = Uri.parse('$baseUrl/mutasi/download$queryParam');
+      final queryParams = <String, String>{};
+      if (statementId != null && statementId > 0) {
+        queryParams['id'] = statementId.toString();
+      }
+      if (startDate != null && startDate.isNotEmpty) {
+        queryParams['start_date'] = startDate;
+      }
+      if (endDate != null && endDate.isNotEmpty) {
+        queryParams['end_date'] = endDate;
+      }
+
+      final uri = Uri.parse('$baseUrl/mutasi/download').replace(queryParameters: queryParams);
       final response = await http.get(uri, headers: headers);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
         final bytes = response.bodyBytes;
         Directory? dir;
         try {

@@ -1,5 +1,6 @@
 /// Model data profil nasabah Bank BJB
 class UserModel {
+  final String username;
   final String fullName;
   final String accountNumber;
   final String accountType;
@@ -11,6 +12,7 @@ class UserModel {
   final String branchAddress;
 
   const UserModel({
+    this.username = 'aldi',
     required this.fullName,
     required this.accountNumber,
     this.accountType = 'Tabungan Simpeda',
@@ -25,6 +27,7 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      username: json['username'] as String? ?? 'aldi',
       fullName: json['full_name'] as String? ?? 'ALDI FIRNANDO',
       accountNumber: json['account_number'] as String? ?? '0070482584100',
       accountType: json['product_name'] as String? ?? 'Tabungan Simpeda',
@@ -38,6 +41,7 @@ class UserModel {
   }
 
   UserModel copyWith({
+    String? username,
     String? fullName,
     String? accountNumber,
     String? accountType,
@@ -49,6 +53,7 @@ class UserModel {
     String? branchAddress,
   }) {
     return UserModel(
+      username: username ?? this.username,
       fullName: fullName ?? this.fullName,
       accountNumber: accountNumber ?? this.accountNumber,
       accountType: accountType ?? this.accountType,
@@ -63,6 +68,7 @@ class UserModel {
 
   /// Default profil nasabah demo
   static const UserModel defaultUser = UserModel(
+    username: 'aldi',
     fullName: 'ALDI FIRNANDO',
     accountNumber: '0070482584100',
     accountType: 'Tabungan Simpeda',

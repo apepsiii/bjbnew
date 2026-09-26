@@ -132,14 +132,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top Header Biru BJB (1:1 Sesuai 4main_menu_top_page.jpeg)
+                // Top Header Biru BJB (~50% Tinggi Layar)
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.only(
-                    top: topPadding + 6,
+                    top: topPadding + 8,
                     left: 18,
                     right: 18,
-                    bottom: 24,
+                    bottom: 40,
                   ),
                   decoration: const BoxDecoration(
                     image: DecorationImage(
@@ -235,7 +235,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 36),
+                      const SizedBox(height: 28),
 
                       // Sapaan Nama Nasabah
                       Text(
@@ -261,7 +261,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
                       // Card 1: Rekening Tabungan Utama (0157902441103)
                       _buildAccountCard(
@@ -300,20 +300,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
-
-                // White Container Menu Grid Renggang & Longgar (1:1 Sesuai Gambar)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 28),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
+                // White Container Menu Grid Renggang & Longgar dengan Overlay (+1 Overlay)
+                Transform.translate(
+                  offset: const Offset(0, -28),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(12, 22, 12, 28),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
                     ),
-                  ),
-                  child: Column(
+                    child: Column(
                     children: [
                       // Grid 15 Menu Items dengan Jarak Renggang Longgar
                       GridView.count(
@@ -457,6 +457,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                 ),
+              ),
               ],
             ),
           ),
@@ -470,7 +471,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _showToast('Halo! Saya Tami, asisten virtual bank bjb.');
               },
               child: Image.asset(
-                AppAssets.panggilTami,
+                AppAssets.logoTammyFloating,
                 width: 64,
                 height: 64,
                 fit: BoxFit.contain,

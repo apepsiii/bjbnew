@@ -6,7 +6,6 @@ import 'package:printing/printing.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_assets.dart';
 import '../models/statement_request.dart';
-import '../services/pdf_service.dart';
 import '../services/email_service.dart';
 import '../services/api_service.dart';
 import '../widgets/bjb_app_bar.dart';
@@ -44,17 +43,33 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     });
 
     try {
-      // 1. Coba ambil PDF asli yang diunggah ke server terlebih dahulu
+      // 1. Mengunduh PDF asli yang diunggah di server untuk periode yang diminta
       File? file;
-      final downloadedPath = await ApiService.downloadStatementPDF();
+      final startStr = DateFormat('yyyy-MM-dd').format(widget.request.startDate);
+      final endStr = DateFormat('yyyy-MM-dd').format(widget.request.endDate);
+
+      final downloadedPath = await ApiService.downloadStatementPDF(
+        startDate: startStr,
+        endDate: endStr,
+      );
       if (downloadedPath != null && File(downloadedPath).existsSync()) {
         file = File(downloadedPath);
-      } else {
-        // Fallback: Generate PDF jika server tidak merespon/file belum diunggah
-        file = await PdfService.generateStatementPdf(widget.request);
       }
 
       if (!mounted) return;
+
+      if (file == null) {
+        setState(() {
+          _pdfFile = null;
+          _isGeneratingPdf = false;
+          _isSendingEmail = false;
+          _emailSuccess = false;
+          _emailStatusMessage =
+              '❌ Berkas PDF Rekening Koran untuk periode ini belum diunggah di server.';
+        });
+        return;
+      }
+
       setState(() {
         _pdfFile = file;
         _isGeneratingPdf = false;

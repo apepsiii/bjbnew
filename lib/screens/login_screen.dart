@@ -14,6 +14,29 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _queryController = TextEditingController(text: 'aldi');
+  String _savedFullName = 'ALDI FIRNANDO...';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedUser();
+  }
+
+  void _loadSavedUser() async {
+    final saved = await ApiService.getRememberedUser();
+    if (saved != null) {
+      if (mounted) {
+        setState(() {
+          if (saved['username'] != null && saved['username']!.isNotEmpty) {
+            _queryController.text = saved['username']!;
+          }
+          if (saved['fullName'] != null && saved['fullName']!.isNotEmpty) {
+            _savedFullName = '${saved['fullName']!.toUpperCase()}...';
+          }
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -112,10 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    // Middle Sapaan User: Halo, MUHAMAD SAEPURAH...
-                    const Column(
+                    // Middle Sapaan User: Halo, ALDI FIRNANDO...
+                    Column(
                       children: [
-                        Text(
+                        const Text(
                           'Halo,',
                           style: TextStyle(
                             fontFamily: AppAssets.fontFamily,
@@ -124,11 +147,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
-                          'MUHAMAD SAEPURAH...',
+                          _savedFullName,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: AppAssets.fontFamily,
                             fontSize: 21,
                             fontWeight: FontWeight.w800,

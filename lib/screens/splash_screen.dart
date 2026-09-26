@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_assets.dart';
 import 'login_screen.dart';
 
-/// Layar Splash 1:1 dengan logo icon_digi_smb.png & nama 'DIGI bank bjb'
+/// Layar Splash Dua Tahap: splash_screen_new.png disusul launcher_background.png
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -11,34 +11,26 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
-  Timer? _timer;
+class _SplashScreenState extends State<SplashScreen> {
+  int _phase = 0; // 0: splash_screen_new.png, 1: launcher_background.png
+  Timer? _timer1;
+  Timer? _timer2;
 
   @override
   void initState() {
     super.initState();
 
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
+    // Tahap 1 -> Tahap 2 (launcher_background.png) setelah 1.8 detik
+    _timer1 = Timer(const Duration(milliseconds: 1800), () {
+      if (mounted) {
+        setState(() {
+          _phase = 1;
+        });
+      }
+    });
 
-    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeIn),
-    );
-
-    _animController.forward();
-
-    // Otomatis pindah ke LoginScreen setelah 2.5 detik
-    _timer = Timer(const Duration(milliseconds: 2500), () {
+    // Tahap 2 -> LoginScreen setelah 3.6 detik
+    _timer2 = Timer(const Duration(milliseconds: 3600), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -47,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
-            transitionDuration: const Duration(milliseconds: 400),
+            transitionDuration: const Duration(milliseconds: 500),
           ),
         );
       }
@@ -56,8 +48,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _animController.dispose();
+    _timer1?.cancel();
+    _timer2?.cancel();
     super.dispose();
   }
 
@@ -65,38 +57,24 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0083C9),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    AppAssets.logoDigiSmb,
-                    width: 140,
-                    height: 140,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'DIGI bank bjb',
-                    style: TextStyle(
-                      fontFamily: AppAssets.fontFamily,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+      body: SizedBox.expand(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 600),
+          child: _phase == 0
+              ? Image.asset(
+                  AppAssets.splashScreenNew,
+                  key: const ValueKey(0),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                )
+              : Image.asset(
+                  AppAssets.launcherBackground,
+                  key: const ValueKey(1),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
         ),
       ),
     );

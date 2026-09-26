@@ -96,7 +96,7 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
     final liveTimeString = DateFormat('dd/MM/yyyy\nHH:mm:ss').format(now);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFD9ECFA),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0083C9),
         elevation: 0,

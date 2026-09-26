@@ -5,9 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import '../constants/app_assets.dart';
 import '../models/user_model.dart';
 import '../models/transaction_item.dart';
-import '../models/statement_request.dart';
 import '../services/api_service.dart';
-import '../services/pdf_service.dart';
 
 /// Layar Hasil Mutasi Rekening 1:1 sesuai desain referensi context/design_reference/new/11mutasi_rekening_hasil__page.jpeg
 class MutasiRekeningHasilScreen extends StatefulWidget {
@@ -92,13 +90,13 @@ class _MutasiRekeningHasilScreenState extends State<MutasiRekeningHasilScreen> {
     );
 
     try {
-      final periods = await ApiService.getStatementPeriods();
-      int? targetStmtId;
-      if (periods.isNotEmpty) {
-        targetStmtId = periods.first['id'] as int?;
-      }
+      final startStr = DateFormat('yyyy-MM-dd').format(widget.startDate);
+      final endStr = DateFormat('yyyy-MM-dd').format(widget.endDate);
 
-      final downloadedPath = await ApiService.downloadStatementPDF(statementId: targetStmtId);
+      final downloadedPath = await ApiService.downloadStatementPDF(
+        startDate: startStr,
+        endDate: endStr,
+      );
 
       if (!mounted) return;
       setState(() => _isDownloadingPdf = false);
@@ -106,7 +104,7 @@ class _MutasiRekeningHasilScreenState extends State<MutasiRekeningHasilScreen> {
       if (downloadedPath != null && File(downloadedPath).existsSync()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Berkas Rekening Koran berhasil diunduh:\n$downloadedPath'),
+            content: Text('✅ Berkas Rekening Koran berhasil diunduh dari server:\n$downloadedPath'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 4),
           ),
@@ -114,26 +112,13 @@ class _MutasiRekeningHasilScreenState extends State<MutasiRekeningHasilScreen> {
 
         await OpenFilex.open(downloadedPath);
       } else {
-        final request = StatementRequest(
-          user: widget.user,
-          startDate: widget.startDate,
-          endDate: widget.endDate,
-          targetEmail: widget.targetEmail.isNotEmpty ? widget.targetEmail : widget.user.email,
-          transactions: _transactions,
-        );
-
-        final pdfFile = await PdfService.generateStatementPdf(request);
-
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('✅ Berkas Rekening Koran dibuat:\n${pdfFile.path}'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
+          const SnackBar(
+            content: Text('❌ Berkas Rekening Koran PDF untuk periode ini belum diunggah di server.'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 4),
           ),
         );
-
-        await OpenFilex.open(pdfFile.path);
       }
     } catch (e) {
       if (mounted) {
