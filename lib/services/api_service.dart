@@ -11,34 +11,17 @@ import '../models/transaction_item.dart';
 class ApiService {
   static const String _tokenKey = 'bjb_jwt_token';
 
-  // Production Domain URL (Dapat diatur via --dart-define=API_URL=https://...)
-  static const String _defaultProductionUrl = 'https://api-digi.bankbjb.co.id/api/v1';
+  // Domain URL Backend BJB
+  static const String _defaultProductionUrl = 'https://bjb.gxa.my.id/api/v1';
 
-  // IP Lokal Wi-Fi Laptop Anda untuk Pengujian HP Fisik Tanpa Kabel USB
-  static String customLocalIp = '192.168.1.100';
-
-  // Dynamic Base URL Generator (Dev vs Production)
+  // Dynamic Base URL Generator (Dapat di-override via --dart-define=API_URL=http://...)
   static String get baseUrl {
     const String overrideUrl = String.fromEnvironment('API_URL');
     if (overrideUrl.isNotEmpty) {
       return overrideUrl;
     }
 
-    const bool isRelease = bool.fromEnvironment('dart.vm.product');
-    if (isRelease) {
-      return _defaultProductionUrl;
-    }
-
-    if (kIsWeb) {
-      return 'http://localhost:8080/api/v1';
-    }
-
-    // Untuk HP Fisik via ADB Reverse USB Cable atau Android Emulator (10.0.2.2 / localhost)
-    if (Platform.isAndroid || Platform.isIOS) {
-      return 'http://localhost:8080/api/v1';
-    }
-
-    return 'http://localhost:8080/api/v1';
+    return _defaultProductionUrl;
   }
 
   static const String _savedUsernameKey = 'bjb_saved_username';
