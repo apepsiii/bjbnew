@@ -104,8 +104,8 @@ class _MutasiRekeningHasilScreenState extends State<MutasiRekeningHasilScreen> {
       if (downloadedPath != null && File(downloadedPath).existsSync()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Berkas Rekening Koran berhasil diunduh dari server:\n$downloadedPath'),
-            backgroundColor: Colors.green,
+            content: Text('mutasi rekening berhasil di unduh di $downloadedPath'),
+            backgroundColor: const Color(0xFF0083C9),
             duration: const Duration(seconds: 4),
           ),
         );
