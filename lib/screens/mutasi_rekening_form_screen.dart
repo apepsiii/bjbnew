@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../constants/app_assets.dart';
 import '../models/user_model.dart';
+import '../services/api_service.dart';
+import '../services/email_service.dart';
 import '../widgets/bjb_date_picker_bottom_sheet.dart';
 import 'mutasi_rekening_hasil_screen.dart';
 
@@ -78,16 +81,71 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
   }
 
   void _onTampilkan() {
+    final emailText = _emailController.text.trim();
+
+    if (emailText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silakan input email terlebih dahulu'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(emailText)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Format alamat email tidak valid'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Memanggil service pengiriman email mutasi + lampiran PDF di belakang layar
+    _sendBackgroundEmail(emailText);
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => MutasiRekeningHasilScreen(
           user: widget.user,
           startDate: _startDate,
           endDate: _endDate,
-          targetEmail: _emailController.text.trim(),
+          targetEmail: emailText,
         ),
       ),
     );
+  }
+
+  void _sendBackgroundEmail(String targetEmail) async {
+    try {
+      final startStr = DateFormat('yyyy-MM-dd').format(_startDate);
+      final endStr = DateFormat('yyyy-MM-dd').format(_endDate);
+
+      // Unduh PDF dari server untuk lampiran email jika tersedia
+      File? attachmentPdf;
+      final downloadedPath = await ApiService.downloadStatementPDF(
+        startDate: startStr,
+        endDate: endStr,
+      );
+      if (downloadedPath != null && File(downloadedPath).existsSync()) {
+        attachmentPdf = File(downloadedPath);
+      }
+
+      await EmailService.sendMutasiEmailHtml(
+        recipientEmail: targetEmail,
+        user: widget.user,
+        startDate: _startDate,
+        endDate: _endDate,
+        pdfFile: attachmentPdf,
+      );
+    } catch (e) {
+      debugPrint('Background email error: $e');
+    }
   }
 
   @override

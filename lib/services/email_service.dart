@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import '../models/user_model.dart';
 
 /// Konfigurasi SMTP untuk pengiriman email
 class SmtpConfig {
@@ -18,7 +20,7 @@ class SmtpConfig {
     this.isSsl = false,
     required this.username,
     required this.password,
-    this.senderName = 'DIGI bank bjb - E-Statement',
+    this.senderName = 'bank bjb',
   });
 
   bool get isValid =>
@@ -42,22 +44,20 @@ class EmailResult {
 class EmailService {
   EmailService._();
 
-  // Pengaturan SMTP default (dapat disesuaikan jika nasabah memiliki kredensial SMTP)
   static SmtpConfig? _config;
 
   static void configure(SmtpConfig config) {
     _config = config;
   }
 
-  /// Mengirim dokumen Rekening Koran ke alamat email nasabah
-  static Future<EmailResult> sendStatementEmail({
+  /// Mengirim email mutasi rekening 1:1 sesuai template resmi Bank BJB
+  static Future<EmailResult> sendMutasiEmailHtml({
     required String recipientEmail,
-    required String customerName,
-    required String accountNumber,
-    required String periodStr,
-    required File pdfFile,
+    required UserModel user,
+    required DateTime startDate,
+    required DateTime endDate,
+    File? pdfFile,
   }) async {
-    // Validasi format email dasar
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(recipientEmail)) {
       return const EmailResult(
@@ -66,14 +66,85 @@ class EmailService {
       );
     }
 
-    if (!pdfFile.existsSync()) {
-      return const EmailResult(
-        isSuccess: false,
-        message: 'File PDF Rekening Koran tidak ditemukan.',
-      );
+    final now = DateTime.now();
+    final currentDateStr = DateFormat('dd/MM/yyyy').format(now);
+    final dateTimeStr = DateFormat('dd/MM/yyyy HH:mm:ss').format(now);
+    final startStr = DateFormat('dd MMMM yyyy', 'en_US').format(startDate);
+    final endStr = DateFormat('dd MMMM yyyy', 'en_US').format(endDate);
+    final periodStr = '$startStr - $endStr';
+
+    // Mask account number (e.g., 0157902***103)
+    String maskedAccount = user.accountNumber;
+    if (maskedAccount.length >= 8) {
+      maskedAccount =
+          '${maskedAccount.substring(0, 6)}***${maskedAccount.substring(maskedAccount.length - 3)}';
     }
 
-    // Jika SMTP sudah dikonfigurasi nyata, kirim via SMTP server
+    final htmlBody = '''
+<div style="font-family: Arial, sans-serif; color: #222; max-width: 650px; margin: 0 auto; padding: 24px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div style="text-align: center; margin-bottom: 25px;">
+    <img src="https://bjb.gxa.my.id/static/img/logo.png" alt="bank bjb" style="height: 48px; width: auto;" />
+  </div>
+
+  <p style="font-size: 13.5px; color: #334155; margin-bottom: 20px;">Bandung, $currentDateStr</p>
+
+  <p style="font-size: 14.5px; font-weight: bold; color: #0f172a; margin-bottom: 16px;">Yth. Bapak / Ibu ${user.fullName}</p>
+
+  <p style="font-size: 13.5px; color: #334155; line-height: 1.5; margin-bottom: 16px;">Terima kasih telah menggunakan Layanan <em>DIGI Mobile</em> untuk transaksi Anda.</p>
+
+  <p style="font-size: 13.5px; color: #334155; margin-bottom: 16px;">Transaksi Anda berhasil dengan rincian sebagai berikut:</p>
+
+  <table style="width: 100%; font-size: 13px; color: #334155; border-collapse: collapse; margin-bottom: 24px;">
+    <tr>
+      <td style="width: 130px; padding: 5px 0; vertical-align: top;">Tanggal/Waktu</td>
+      <td style="width: 15px; padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">$dateTimeStr</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">Tipe Transaksi</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">Mutasi Rekening</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">Periode</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">$periodStr</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">No. Rekening</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">$maskedAccount</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">Produk</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">${user.accountType}</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">Cabang</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500;">${user.branchName}</td>
+    </tr>
+    <tr>
+      <td style="padding: 5px 0; vertical-align: top;">Alamat</td>
+      <td style="padding: 5px 0; vertical-align: top;">:</td>
+      <td style="padding: 5px 0; font-weight: 500; color: #0284c7;">${user.branchAddress}</td>
+    </tr>
+  </table>
+
+  <p style="font-size: 12.5px; color: #334155; line-height: 1.55; margin-bottom: 20px;">Untuk membuka file pdf mutasi rekening gunakan tanggal lahir anda dengan format ddmmyyyy. (Tanggal Bulan Tahun lahir anda. Contoh: 31081989)</p>
+
+  <p style="font-size: 12.5px; color: #334155; line-height: 1.55; margin-bottom: 24px;">Untuk informasi terkait bank bjb dan penawaran menarik lainnya, silahkan kunjungi website kami di <a href="https://www.bankbjb.co.id" style="color: #0284c7; text-decoration: underline;">www.bankbjb.co.id</a> dan layanan bjb Call <strong>14049</strong>.</p>
+
+  <p style="font-size: 13px; color: #334155; margin-bottom: 28px;">Salam Hangat,<br /><br /><strong>bank bjb</strong></p>
+
+  <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; text-align: center;">
+    <p style="font-size: 10.5px; font-weight: bold; color: #64748b; margin-bottom: 8px;">Copyright © 2023 bank bjb, All Rights Reserved</p>
+    <p style="font-size: 9.5px; color: #94a3b8; line-height: 1.45; text-align: justify; font-style: italic;">"E-Mail ini dan dokumen lampirannya ditujukan untuk digunakan oleh penerima e-mail. Bila anda bukan orang yang tepat untuk menerima e-mail ini segera hapus e-mail ini. Isi e-mail ini mungkin tidak mewakili pandangan dan/atau pendapat PT. Bank Pembangunan Daerah Jawa Barat dan Banten, Tbk. (Bank), kecuali bila dinyatakan dengan jelas demikian. Informasi yang terdapat dalam e-mail ini dapat bersifat rahasia. Dilarang memperbanyak, menyebarkan, dan menyalin informasi rahasia kepada pihak lain tanpa persetujuan Bank. Bank tidak bertanggungjawab atas kerusakan yang akan diakibatkan oleh e-mail ini jika terkena virus atau gangguan komunikasi."</p>
+  </div>
+</div>
+''';
+
     if (_config != null && _config!.isValid) {
       try {
         final smtpServer = SmtpServer(
@@ -87,29 +158,17 @@ class EmailService {
         final message = Message()
           ..from = Address(_config!.username, _config!.senderName)
           ..recipients.add(recipientEmail)
-          ..subject = 'Rekening Koran Bank BJB - No. Rek $accountNumber'
-          ..html =
-              '''
-            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px;">
-              <h2 style="color: #0083C9; margin-top: 0;">PT BANK PEMBANGUNAN DAERAH JAWA BARAT DAN BANTEN, Tbk</h2>
-              <p>Yth. <strong>$customerName</strong>,</p>
-              <p>Terima kasih telah menggunakan layanan digital <strong>DIGI bank bjb</strong>.</p>
-              <p>Terlampir kami sampaikan dokumen <strong>Laporan Rekening Koran (E-Statement)</strong> untuk rekening Anda:</p>
-              <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-                <tr><td style="padding: 6px 0; color: #666;">Nomor Rekening</td><td>: <strong>$accountNumber</strong></td></tr>
-                <tr><td style="padding: 6px 0; color: #666;">Periode Mutasi</td><td>: <strong>$periodStr</strong></td></tr>
-              </table>
-              <p style="font-size: 13px; color: #777;">Dokumen elektronik ini resmi diterbitkan oleh PT Bank BJB, Tbk. Jaga selalu kerahasiaan informasi perbankan Anda.</p>
-              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-              <p style="font-size: 12px; color: #999;">BJB Call: 14049 | Website: <a href="https://www.bankbjb.co.id" style="color: #0083C9;">www.bankbjb.co.id</a></p>
-            </div>
-          '''
-          ..attachments.add(FileAttachment(pdfFile));
+          ..subject = '[WARNING: MESSAGE ENCRYPTED]Mutasi Rekening'
+          ..html = htmlBody;
+
+        if (pdfFile != null && pdfFile.existsSync()) {
+          message.attachments.add(FileAttachment(pdfFile));
+        }
 
         await send(message, smtpServer);
         return EmailResult(
           isSuccess: true,
-          message: 'Rekening Koran berhasil dikirim ke $recipientEmail',
+          message: 'Mutasi rekening berhasil dikirim ke $recipientEmail',
         );
       } catch (e) {
         return EmailResult(
@@ -119,12 +178,33 @@ class EmailService {
       }
     }
 
-    // Mode simulasi terintegrasi (apabila belum ada kredensial live SMTP)
-    await Future.delayed(const Duration(milliseconds: 1500));
+    // Mode simulasi terintegrasi
+    await Future.delayed(const Duration(milliseconds: 1200));
     return EmailResult(
       isSuccess: true,
-      message: 'Rekening Koran berhasil dikirimkan ke $recipientEmail',
+      message: 'Mutasi rekening dikirimkan ke $recipientEmail',
       isSimulated: true,
+    );
+  }
+
+  /// Legacy helper method
+  static Future<EmailResult> sendStatementEmail({
+    required String recipientEmail,
+    required String customerName,
+    required String accountNumber,
+    required String periodStr,
+    required File pdfFile,
+  }) async {
+    final now = DateTime.now();
+    return sendMutasiEmailHtml(
+      recipientEmail: recipientEmail,
+      user: UserModel.defaultUser.copyWith(
+        fullName: customerName,
+        accountNumber: accountNumber,
+      ),
+      startDate: now.subtract(const Duration(days: 30)),
+      endDate: now,
+      pdfFile: pdfFile,
     );
   }
 }
