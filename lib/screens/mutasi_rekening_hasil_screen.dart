@@ -322,7 +322,12 @@ class _MutasiRekeningHasilScreenState extends State<MutasiRekeningHasilScreen> {
           // Bottom Navigation Bar (Prev 1 Next | < Bagikan 1:1 Sesuai Gambar)
           Container(
             color: const Color(0xFFD9ECFA),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: 12 + MediaQuery.of(context).padding.bottom,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

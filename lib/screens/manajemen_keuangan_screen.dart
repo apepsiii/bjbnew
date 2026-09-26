@@ -421,7 +421,7 @@ class _ManajemenKeuanganScreenState extends State<ManajemenKeuanganScreen>
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16 + MediaQuery.of(context).padding.bottom),
                       ],
                     ),
                   ),

@@ -8,6 +8,7 @@ import '../constants/app_assets.dart';
 import '../models/statement_request.dart';
 import '../services/pdf_service.dart';
 import '../services/email_service.dart';
+import '../services/api_service.dart';
 import '../widgets/bjb_app_bar.dart';
 
 /// Layar penampil dokumen PDF Rekening Koran terintegrasi beserta status pengiriman email
@@ -43,8 +44,15 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     });
 
     try {
-      // 1. Generate PDF
-      final file = await PdfService.generateStatementPdf(widget.request);
+      // 1. Coba ambil PDF asli yang diunggah ke server terlebih dahulu
+      File? file;
+      final downloadedPath = await ApiService.downloadStatementPDF();
+      if (downloadedPath != null && File(downloadedPath).existsSync()) {
+        file = File(downloadedPath);
+      } else {
+        // Fallback: Generate PDF jika server tidak merespon/file belum diunggah
+        file = await PdfService.generateStatementPdf(widget.request);
+      }
 
       if (!mounted) return;
       setState(() {

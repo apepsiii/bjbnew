@@ -325,6 +325,8 @@ class _StatementFormScreenState extends State<StatementFormScreen> {
                 isLoading: _isLoading,
                 onPressed: _submitStatementRequest,
               ),
+
+              SizedBox(height: 24 + MediaQuery.of(context).padding.bottom),
             ],
           ),
         ),

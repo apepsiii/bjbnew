@@ -401,7 +401,7 @@ class _MutasiRekeningFormScreenState extends State<MutasiRekeningFormScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24 + MediaQuery.of(context).padding.bottom),
           ],
         ),
       ),
